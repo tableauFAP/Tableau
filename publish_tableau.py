@@ -32,7 +32,7 @@ with server.auth.sign_in(tableau_auth):
     project_id = project.id
 
     # Préparer le fichier CSV pour publication
-    file_item = TSC.FileUploadItem(CSV_PATH)  # <-- seulement le chemin du fichier
+    file_item = TSC.FileuploadItem(CSV_PATH)  # <-- seulement le chemin du fichier
 
     # Préparer la datasource
     datasource = TSC.DatasourceItem(project_id, name=DATASOURCE_NAME)
