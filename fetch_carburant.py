@@ -4,7 +4,7 @@ import io
 import pandas as pd
 
 # URL officielle INSEE
-URL = "https://bdm.insee.fr/series/000442588/xlsx"
+URL = "https://bdm.insee.fr/series/000442588+000849411+000442589/xlsx"
 
 # Télécharger le ZIP
 print("Téléchargement du ZIP...")
