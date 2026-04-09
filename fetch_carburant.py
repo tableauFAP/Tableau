@@ -34,5 +34,5 @@ data = df[sheet_name]
 data = data.dropna(how='all')
 
 # Sauvegarder en CSV
-data.to_csv("Insee_Gazole.csv", index=False)
+data.to_csv("InseeCarburants.csv", index=False)
 print("CSV généré ✅")
