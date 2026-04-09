@@ -2,15 +2,16 @@ from tableau_api_lib import TableauServerConnection
 from tableau_api_lib.utils.querying import get_projects_dataframe
 
 connection = TableauServerConnection(
-    server='https://your-site.tableau.com',
-    api_version='3.20',
-    personal_access_token_name='YOUR_TOKEN_NAME',
-    personal_access_token_secret='YOUR_TOKEN_VALUE',
-    site_id='YOUR_SITE_ID'
+    host='https://10ax.online.tableau.com',             # ton URL Tableau Cloud
+    site_id='Default',                                  # ton site Tableau
+    personal_access_token_name='TON_TOKEN_NAME',
+    personal_access_token_secret='TON_TOKEN_VALUE',
+    api_version='3.20'
 )
+
 connection.sign_in()
 
-# Publier le CSV comme datasource
+# Exemple : publier le CSV
 csv_file_path = "data_carburant.csv"
 project_name = "Default"
 
