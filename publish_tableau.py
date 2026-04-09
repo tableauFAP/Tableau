@@ -21,9 +21,9 @@ server = TSC.Server(TABLEAU_SERVER_URL, use_server_version=True)
 
 with server.auth.sign_in(tableau_auth):
 
-    # Trouver l'ID du projet "z_Autres DB"
+    # Trouver l'ID du projet "GitHubDB"
     all_projects, _ = server.projects.get()
-    project = next(p for p in all_projects if p.name == "z_Autres DB")
+    project = next(p for p in all_projects if p.name == "GitHubDB")
     project_id = project.id
 
     # Préparer le fichier CSV
