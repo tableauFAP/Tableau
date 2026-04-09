@@ -6,11 +6,17 @@ CLIENT_ID = os.environ["INSEE_CLIENT_ID"]
 CLIENT_SECRET = os.environ["INSEE_CLIENT_SECRET"]
 
 # 🔐 Token
-token = requests.post(
+response = requests.post(
     "https://api.insee.fr/token",
     data={"grant_type": "client_credentials"},
     auth=(CLIENT_ID, CLIENT_SECRET)
-).json()["access_token"]
+)
+
+print("STATUS:", response.status_code)
+print("RESPONSE:", response.text)
+
+data = response.json()
+token = data["access_token"]
 
 # 📊 Data
 url = "https://api.insee.fr/series/BDM/V1/data/SERIES_BDM/000442588"
