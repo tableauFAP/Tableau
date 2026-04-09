@@ -23,8 +23,8 @@ jobs:
 
       - name: Vérifier la présence du fichier CSV
         run: |
-          ls -l Insee_Gazole.csv
-          head -20 Insee_Gazole.csv || echo "Impossible d'afficher le CSV"
+          ls -l InseeCarburants.csv
+          head -20 InseeCarburants.csv || echo "Impossible d'afficher le CSV"
 
       - name: Vérifier l'état Git avant commit
         run: |
@@ -35,7 +35,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
-          git add Insee_Gazole.csv
+          git add InseeCarburants.csv
           # Commit seulement s'il y a des changements
           if git diff --cached --quiet; then
             echo "No changes to commit"
