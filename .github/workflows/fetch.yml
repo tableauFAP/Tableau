@@ -43,3 +43,13 @@ jobs:
             git commit -m "Update carburant data"
             git push origin main
           fi
+
+      
+      - name: Publier CSV sur Tableau Cloud
+        run: |
+          python publish_tableau.py
+        env:
+          TABLEAU_SERVER_URL: ${{ secrets.TABLEAU_SERVER_URL }}
+          TABLEAU_API_TOKEN_NAME: ${{ secrets.TABLEAU_API_TOKEN_NAME }}
+          TABLEAU_API_TOKEN_VALUE: ${{ secrets.TABLEAU_API_TOKEN_VALUE }}
+          TABLEAU_SITE_ID: ${{ secrets.TABLEAU_SITE_ID }}
