@@ -10,17 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout du repo
       - uses: actions/checkout@v4
 
+      # 2️⃣ Installer Python
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # 3️⃣ Installer dépendances
       - run: pip install requests pandas openpyxl
 
+      # 4️⃣ Exécuter le script Python
       - name: Run fetch script
         run: python fetch_carburant.py
 
+      # 5️⃣ Commit + push automatique avec le token Actions
       - name: Commit CSV
         uses: ad-m/github-push-action@v0.6.0
         with:
