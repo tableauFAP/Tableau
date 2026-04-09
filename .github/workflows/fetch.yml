@@ -16,7 +16,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - run: pip install requests pandas openpyxl tableau-api-lib
+      - run: pip install requests pandas openpyxl
+      
+      - run: pip install tableau-api-lib==0.20.0
 
       - name: Run fetch script
         run: python fetch_carburant.py
