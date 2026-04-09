@@ -27,6 +27,6 @@ jobs:
           git config --global user.email "action@github.com"
           git add data_carburant.csv
           git commit -m "Update carburant data" || echo "No changes"
-          # Configurer le remote avec le GITHUB_TOKEN
+          # Configurer le remote correctement (sans / finale)
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin main
