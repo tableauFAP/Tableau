@@ -1,0 +1,30 @@
+name: Fetch Carburant
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # tous les jours à 6h UTC
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install requests pandas openpyxl
+
+      - name: Run fetch script
+        run: python fetch_carburant.py
+
+      - name: Commit CSV
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data_carburant.csv
+          git commit -m "Update carburant data" || echo "No changes"
+          git push
