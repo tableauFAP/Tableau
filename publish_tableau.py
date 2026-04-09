@@ -23,7 +23,7 @@ with server.auth.sign_in(tableau_auth):
 
     # Lister les projets
     all_projects, _ = server.projects.get()
-    project_name = "GitHubDB"  # ou le nom exact du projet existant
+    project_name = "GitHubDB"  # nom exact du projet sur Tableau Cloud
     project = next((p for p in all_projects if p.name == project_name), None)
     if project is None:
         # Créer le projet si inexistant
@@ -31,14 +31,11 @@ with server.auth.sign_in(tableau_auth):
         project = server.projects.create(new_project)
     project_id = project.id
 
-    # Préparer le fichier CSV pour publication
-    file_item = TSC.FileuploadItem(CSV_PATH)  # <-- seulement le chemin du fichier
-
     # Préparer la datasource
     datasource = TSC.DatasourceItem(project_id, name=DATASOURCE_NAME)
 
-    # Publier ou mettre à jour la datasource
+    # Publier ou mettre à jour la datasource directement depuis le CSV
     print("Publication en cours sur Tableau Cloud...")
-    server.datasources.publish(datasource, file_item, mode=TSC.Server.PublishMode.Overwrite)
+    server.datasources.publish(datasource, CSV_PATH, mode=TSC.Server.PublishMode.Overwrite)
 
     print("✅ Publication terminée")
