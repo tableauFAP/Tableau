@@ -27,7 +27,7 @@ with server.auth.sign_in(tableau_auth):
     project_id = project.id
 
     # Préparer le fichier CSV
-    new_datasource = TSC.FileUploadItem(CSV_PATH, DATASOURCE_NAME)
+    new_datasource = TSC.FileuploadItem(CSV_PATH, DATASOURCE_NAME)
 
     # Publier / mettre à jour
     print("Publication en cours sur Tableau Cloud...")
