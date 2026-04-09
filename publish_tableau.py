@@ -19,8 +19,8 @@ TABLEAU_SITE_ID = os.environ["TABLEAU_SITE_ID"]
 TABLEAU_API_TOKEN_NAME = os.environ["TABLEAU_API_TOKEN_NAME"]
 TABLEAU_API_TOKEN_VALUE = os.environ["TABLEAU_API_TOKEN_VALUE"]
 
-CSV_PATH = "data_carburant.csv"
-HYPER_PATH = "data_carburant.hyper"
+CSV_PATH = "Insee_Gazole.csv"
+HYPER_PATH = "Insee_Gazole.hyper"
 DATASOURCE_NAME = "Carburant"
 
 # --- Nettoyage des noms de colonnes ---
