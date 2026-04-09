@@ -1,29 +1,38 @@
 import requests
-import pandas as pd
+import zipfile
 import io
+import pandas as pd
 
-# URL directe du fichier Excel INSEE
-URL = "https://www.insee.fr/fr/statistiques/fichier/000442588/prix_carburants.xlsx"
+# URL officielle INSEE
+URL = "https://bdm.insee.fr/series/000442588/xlsx"
 
-print("Téléchargement du fichier INSEE...")
+# Télécharger le ZIP
+print("Téléchargement du ZIP...")
 response = requests.get(URL)
-
 if response.status_code != 200:
     raise Exception(f"Impossible de télécharger le fichier: {response.status_code}")
 
-# Lire le fichier Excel depuis la mémoire
-excel_data = pd.read_excel(io.BytesIO(response.content), sheet_name=None)  # None = toutes les feuilles
+# Ouvrir le ZIP depuis la mémoire
+with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+    # Liste des fichiers contenus
+    print("Fichiers dans le ZIP:", z.namelist())
+    # On prend le premier fichier Excel trouvé
+    excel_filename = [f for f in z.namelist() if f.endswith(".xlsx")][0]
+    print("Extraction du fichier:", excel_filename)
+    with z.open(excel_filename) as f:
+        # Lire l'Excel
+        df = pd.read_excel(f, sheet_name=None)  # None = toutes les feuilles
 
 # Vérifier les feuilles
-print("Feuilles disponibles:", excel_data.keys())
+print("Feuilles disponibles:", df.keys())
 
-# Exemple: choisir la feuille pertinente (vérifie le nom exact dans le fichier)
-sheet_name = list(excel_data.keys())[0]  # première feuille par défaut
-df = excel_data[sheet_name]
+# Exemple : prendre la première feuille
+sheet_name = list(df.keys())[0]
+data = df[sheet_name]
 
-# Nettoyage simple si nécessaire
-df = df.dropna(how='all')  # enlever les lignes vides
+# Nettoyage simple
+data = data.dropna(how='all')
 
 # Sauvegarder en CSV
-df.to_csv("data_carburant.csv", index=False)
+data.to_csv("data_carburant.csv", index=False)
 print("CSV généré ✅")
