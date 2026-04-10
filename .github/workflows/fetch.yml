@@ -1,10 +1,17 @@
-name: Fetch Carburant Clean
-
+name: 📅 Schedule fetch
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "*/5 * * * *"
-  
+    - cron: '0 */1 * * *' # every hour
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date to run the workflow'
+        required: true
+        type: string
+        default: 'in 1 hour'
+concurrency:
+  group: schedule${{ github.event.inputs.date }}
+  cancel-in-progress: true
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -12,5 +19,54 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test schedule
-        run: echo "SCHEDULE OK"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install pandas requests openpyxl tableauhyperapi tableauserverclient
+
+      # =========================
+      # 1. FETCH DATA
+      # =========================
+      - name: Fetch INSEE data
+        run: python fetch_carburant.py
+
+      - name: Fetch GOUV data
+        run: python fetch_carburant_gouv.py
+
+      # =========================
+      # DEBUG
+      # =========================
+      - name: Debug CSV files
+        run: |
+          ls -l
+          head -20 InseeCarburants.csv || echo "missing"
+          head -20 data_carburant_gouv.csv || echo "missing"
+
+      # =========================
+      # COMMIT (UNIQUE)
+      # =========================
+      - name: Commit all CSV changes
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+
+          git add *.csv
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update carburant data"
+            git push origin main
+          fi
+
+      # =========================
+      # TABLEAU
+      # =========================
+      - name: Publish Tableau
+        run: python publish_tableau.py
+        env:
+          TABLEAU_SERVER_URL: ${{ secrets.TABLEAU_SERVER_URL }}
+          TABLEAU_API_TOKEN_NAME: ${{ secrets.TABLEAU_API_TOKEN_NAME }}
+          TABLEAU_API_TOKEN_VALUE: ${{ secrets.TABLEAU_API_TOKEN_VALUE }}
+          TABLEAU_SITE_ID: ${{ secrets.TABLEAU_SITE_ID }}
