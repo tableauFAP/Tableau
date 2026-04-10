@@ -60,5 +60,18 @@ jobs:
       - name: Fetch carburant API
         run: python fetch_carburant_gouv.py
 
+      - name: Commit CSV if changed
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data_carburant_gouv.csv
+          # Commit seulement s'il y a des changements
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update carburant data"
+            git push origin main
+          fi
+
 
         
