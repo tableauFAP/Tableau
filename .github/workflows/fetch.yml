@@ -55,3 +55,10 @@ jobs:
           TABLEAU_API_TOKEN_NAME: ${{ secrets.TABLEAU_API_TOKEN_NAME }}
           TABLEAU_API_TOKEN_VALUE: ${{ secrets.TABLEAU_API_TOKEN_VALUE }}
           TABLEAU_SITE_ID: ${{ secrets.TABLEAU_SITE_ID }}
+
+
+      - name: Fetch carburant API
+        run: python fetch_carburant_gouv.py
+
+
+        
