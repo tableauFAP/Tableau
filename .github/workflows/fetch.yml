@@ -18,25 +18,34 @@ jobs:
 
       - run: pip install pandas requests openpyxl tableauhyperapi tableauserverclient
 
-      - name: Run fetch script
+      # =========================
+      # 1. FETCH DATA
+      # =========================
+      - name: Fetch INSEE data
         run: python fetch_carburant.py
 
-      - name: Vérifier la présence du fichier CSV
-        run: |
-          ls -l InseeCarburants.csv
-          head -20 InseeCarburants.csv || echo "Impossible d'afficher le CSV"
+      - name: Fetch GOUV data
+        run: python fetch_carburant_gouv.py
 
-      - name: Vérifier l'état Git avant commit
+      # =========================
+      # DEBUG
+      # =========================
+      - name: Debug CSV files
         run: |
-          git status
-          git diff --stat
+          ls -l
+          head -20 InseeCarburants.csv || echo "missing"
+          head -20 data_carburant_gouv.csv || echo "missing"
 
-      - name: Commit CSV if changed
+      # =========================
+      # COMMIT (UNIQUE)
+      # =========================
+      - name: Commit all CSV changes
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
-          git add InseeCarburants.csv
-          # Commit seulement s'il y a des changements
+
+          git add *.csv
+
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
@@ -44,32 +53,13 @@ jobs:
             git push origin main
           fi
 
-      
-      - name: Publier CSV sur Tableau Cloud
-        run: |
-          python publish_tableau.py
+      # =========================
+      # TABLEAU
+      # =========================
+      - name: Publish Tableau
+        run: python publish_tableau.py
         env:
           TABLEAU_SERVER_URL: ${{ secrets.TABLEAU_SERVER_URL }}
           TABLEAU_API_TOKEN_NAME: ${{ secrets.TABLEAU_API_TOKEN_NAME }}
           TABLEAU_API_TOKEN_VALUE: ${{ secrets.TABLEAU_API_TOKEN_VALUE }}
           TABLEAU_SITE_ID: ${{ secrets.TABLEAU_SITE_ID }}
-
-
-      - name: Fetch carburant API
-        run: python fetch_carburant_gouv.py
-
-      - name: Commit CSV if changed
-        run: |
-          git config --global user.name "GitHub Action Bot"
-          git config --global user.email "action@github.com"
-          git add data_carburant_gouv.csv
-          # Commit seulement s'il y a des changements
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update carburant data"
-            git push origin main
-          fi
-
-
-        
