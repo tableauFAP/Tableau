@@ -1,37 +1,40 @@
 import requests
 import pandas as pd
 
-URL = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-carburants-quotidien/records"
+URL = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-carburants-quotidien/exports/xlsx?select=median%28prix_valeur%29%20as%20prix&where=prix_nom%20IS%20NOT%20NULL%20AND%20prix_valeur%20IS%20NOT%20NULL%20AND%20prix_maj%20is%20not%20null&group_by=prix_nom%20as%20category%2C%20date_format%28prix_maj%2C%20%27yyyy-MM-dd%27%29%20as%20date&limit=-1&timezone=UTC&use_labels=false&compressed=false&epsg=4326"
 
-params = {
-    "select": "prix_nom,prix_valeur,prix_maj",
-    "where": "prix_nom IS NOT NULL AND prix_valeur IS NOT NULL AND prix_maj IS NOT NULL",
-    "limit": 100000
-}
+OUTPUT_CSV = "data_carburant_gouv.csv"
 
-print("Téléchargement des données API...")
+print("Téléchargement des données carburant...")
 
-response = requests.get(URL, params=params)
+# Télécharger le fichier Excel
+response = requests.get(URL)
+response.raise_for_status()
 
-if response.status_code != 200:
-    raise Exception(f"Erreur API: {response.status_code}")
+with open("data.xlsx", "wb") as f:
+    f.write(response.content)
 
-data = response.json()["results"]
+print("Fichier Excel téléchargé")
 
-df = pd.DataFrame(data)
+# Lire le Excel
+df = pd.read_excel("data.xlsx")
 
-print(f"Données récupérées : {len(df)} lignes")
+print(f"✅ {len(df)} lignes chargées")
 
-# --- CLEAN DATA ---
-df["date"] = df["prix_maj"].str[:10]
+# Renommer colonnes (important pour Tableau)
+df.columns = ["carburant", "date", "prix"]
 
-# garder dernier prix par station/jour si dispo (optionnel)
-# df = df.sort_values("prix_maj").drop_duplicates(["id", "prix_nom", "date"], keep="last")
+# Nettoyage
+df = df.dropna()
 
-# moyenne nationale
-df_avg = df.groupby(["prix_nom", "date"])["prix_valeur"].mean().reset_index()
+# Conversion types
+df["date"] = pd.to_datetime(df["date"])
+df["prix"] = pd.to_numeric(df["prix"], errors="coerce")
 
-# sauvegarde
-df_avg.to_csv("data_carburant_gouv.csv", index=False)
+# Tri
+df = df.sort_values(by=["carburant", "date"])
 
-print("✅ CSV généré")
+# Sauvegarde CSV
+df.to_csv(OUTPUT_CSV, index=False)
+
+print("✅ CSV généré :", OUTPUT_CSV)
