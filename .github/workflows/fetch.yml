@@ -3,6 +3,8 @@ name: Fetch Carburant
 on:
   schedule:
     - cron: "0 6 * * *"  # tous les jours à 6h UTC
+
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
